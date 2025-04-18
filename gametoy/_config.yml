@@ -1,4 +1,5 @@
 # Site settings
+theme: creative-theme-jekyll
 title: Gametoy project
 email: adrienmar@kickmaker.net
 description: Gametoy project is a very basic woodbox with LEDs, button, buzzer and display to play games
