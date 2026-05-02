@@ -36,13 +36,53 @@ This is a video of the final result. Refer to the following timecode if needed:
             </div>
         </div>
         <div class="row d-flex customchapter">
-            <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0;">
-                <iframe src="https://player.vimeo.com/video/1076817375?h=1fc1debf0e"
-                        frameborder="0" allowfullscreen
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                </iframe>
-              </div>
+            <div class="vimeo-facade" data-video-id="1076817375" data-hash="1fc1debf0e"
+                 style="position: relative; width: 100%; padding-bottom: 56.25%; cursor: pointer; background: #111; overflow: hidden;">
+                <img class="vimeo-facade-thumb"
+                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s;"
+                     src="" alt="Video thumbnail" loading="lazy">
+                <button class="vimeo-facade-btn" aria-label="Play video"
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+                               background: rgba(23,35,34,0.75); border: none; border-radius: 50%; width: 72px; height: 72px;
+                               display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21"/></svg>
+                </button>
+            </div>
         </div>
+        <script>
+        (function() {
+            var facade = document.currentScript.previousElementSibling.querySelector('.vimeo-facade');
+            var videoId = facade.dataset.videoId;
+            var hash = facade.dataset.hash;
+            var thumb = facade.querySelector('.vimeo-facade-thumb');
+            var btn = facade.querySelector('.vimeo-facade-btn');
+
+            // Fetch thumbnail from Vimeo oEmbed (CORS-enabled, no API key needed)
+            fetch('https://vimeo.com/api/oembed.json?url=https://vimeo.com/' + videoId)
+                .then(function(r) { return r.json(); })
+                .then(function(data) { thumb.src = data.thumbnail_url; })
+                .catch(function() { thumb.style.display = 'none'; });
+
+            // On click: replace facade with the real iframe
+            facade.addEventListener('click', function() {
+                var wrapper = document.createElement('div');
+                wrapper.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%';
+                var iframe = document.createElement('iframe');
+                iframe.src = 'https://player.vimeo.com/video/' + videoId + '?h=' + hash + '&autoplay=1';
+                iframe.frameBorder = '0';
+                iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+                iframe.allowFullscreen = true;
+                iframe.style.cssText = 'width:100%;height:100%;';
+                wrapper.appendChild(iframe);
+                facade.innerHTML = '';
+                facade.style.cursor = 'default';
+                facade.appendChild(wrapper);
+            });
+
+            btn.addEventListener('mouseenter', function() { btn.style.background = 'rgba(23,35,34,0.95)'; });
+            btn.addEventListener('mouseleave', function() { btn.style.background = 'rgba(23,35,34,0.75)'; });
+        })();
+        </script>
         <div class="row">
             <div class="col-lg-12 text-center">
                 <h2 class="section-heading">Reactivity game</h2>
